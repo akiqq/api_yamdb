@@ -227,5 +227,5 @@ POST http://127.0.0.1:8000/api/v1/users/
 }
 </code></pre>
 Авторы: <br>[Александр](https://github.com/akiqq) - Тимлид 
-<br>[Дмитрий](https://github.com/...) - Разработчик 
+<br>[Дмитрий](https://github.com/Bacepok) - Разработчик 
 <br>[Владимир](https://github.com/v-mcsimoff) - Разработчик
