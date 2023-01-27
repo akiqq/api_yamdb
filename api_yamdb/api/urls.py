@@ -7,7 +7,7 @@ from .views import (UserViewSet,
                     CategoryViewSet,
                     ReviewViewSet,
                     CommentViewSet,
-                    signup_user,
+                    SignUpView,
                     get_token
                     )
 
@@ -31,5 +31,5 @@ router.register(
 urlpatterns = [
     path('v1/', include(router.urls)),
     path('v1/auth/token/', get_token, name='token'),
-    path('v1/auth/signup/', signup_user, name='signup'),
+    path('v1/auth/signup/', SignUpView.as_view(), name='signup'),
 ]

@@ -9,7 +9,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-
+from rest_framework.views import APIView
 
 from .filters import TitleFilter
 from .permissions import (IsAdmin,
@@ -145,43 +145,34 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, title=title)
 
 
-@api_view(['POST'])
-def signup_user(request):
-    serializer = SignUpSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    user = User.objects.select_related('username')
-    username = serializer.validated_data.get('username')
-    email = serializer.validated_data.get('email')
-    user_exists = User.objects.filter(username=username).exists()
-    email_exists = User.objects.filter(email=email).exists()
-    if not (user_exists and email_exists):
-        if user_exists:
-            return Response(
-                {"detail": "Пользователь с таким именем уже существует"},
-                status=HTTP_400_BAD_REQUEST,
-            )
-        if email_exists:
-            return Response(
-                {"detail": "Пользователь с таким email уже существует"},
-                status=HTTP_400_BAD_REQUEST,
-            )
-    user, created = User.objects.get_or_create(username=username, email=email)
-    token = default_token_generator.make_token(user)
+class SignUpView(APIView):
 
-    try:
-        send_mail(
-            'confirmation code',
-            token,
-            'from@yamdb.ru',
-            [email],
-            fail_silently=False,
+    def post(self, request):
+        serializer = SignUpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = User.objects.select_related('username')
+        username = serializer.validated_data.get('username')
+        email = serializer.validated_data.get('email')
+        user, created = User.objects.get_or_create(
+            username=username,
+            email=email
         )
-        return Response(data=serializer.data, status=HTTP_200_OK)
-    except Exception:
-        user.delete()
-        return Response(
-            status=HTTP_400_BAD_REQUEST,
-        )
+        token = default_token_generator.make_token(user)
+
+        try:
+            send_mail(
+                'confirmation code',
+                token,
+                'from@yamdb.ru',
+                [email],
+                fail_silently=False,
+            )
+            return Response(data=serializer.data, status=HTTP_200_OK)
+        except Exception:
+            user.delete()
+            return Response(
+                status=HTTP_400_BAD_REQUEST,
+            )
 
 
 @api_view(http_method_names=['POST', ])
@@ -201,6 +192,5 @@ def get_token(request):
             {'token': f'{jwt_token}'}, status=HTTP_200_OK
         )
     return Response(
-        {'message': 'Отказано в доступе'},
         status=HTTP_400_BAD_REQUEST
     )
