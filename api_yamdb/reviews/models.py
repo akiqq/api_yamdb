@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-from .validators import validate_year
 from users.models import User
 
 
@@ -28,7 +27,6 @@ class Title(models.Model):
     )
     year = models.IntegerField(
         verbose_name='Год выпуска',
-        validators=[validate_year]
     )
     description = models.TextField(
         verbose_name='Описание'
