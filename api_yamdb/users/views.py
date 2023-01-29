@@ -1,20 +1,21 @@
-from rest_framework.permissions import IsAuthenticated
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, filters
 from rest_framework.decorators import action, api_view
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from rest_framework.views import APIView
-from api.permissions import IsAdmin
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.views import APIView
+
+
 from .serializers import (UserSerializer,
                           AdminSerializer,
                           SignUpSerializer,
                           TokenSerializer)
 from .models import User
+from .permissions import IsAdmin
 
 
 class UserViewSet(viewsets.ModelViewSet):
